@@ -17,12 +17,7 @@ public interface PostMapper {
 
     Post toEntity(PostReadDto postReadDto);
 
-    @Mapping(source = "likes", target = "countOfLikes", qualifiedByName = "countLikes")
+    @Mapping(target = "countOfLikes", expression = "java(post.getLikes() != null ? post.getLikes().size() : 0)")
     PostReadDto toReadDto(Post post);
 
-    @Named("countLikes")
-    default Integer countLikes(List<Like> likes) {
-        if (likes == null) return 0;
-        return likes.size();
-    }
 }

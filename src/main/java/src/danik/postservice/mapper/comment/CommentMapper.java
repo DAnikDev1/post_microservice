@@ -1,9 +1,6 @@
 package src.danik.postservice.mapper.comment;
 
-import org.mapstruct.Mapper;
-import org.mapstruct.Mapping;
-import org.mapstruct.MappingTarget;
-import org.mapstruct.ReportingPolicy;
+import org.mapstruct.*;
 import src.danik.postservice.dto.comment.CommentCreateDto;
 import src.danik.postservice.dto.comment.CommentReadDto;
 import src.danik.postservice.dto.comment.CommentUpdateDto;
@@ -18,13 +15,14 @@ public interface CommentMapper {
 
     Comment toEntity(CommentCreateDto commentCreateDto);
 
-    @Mapping(source = "post.id", target = "postId")
+    @Mapping(target = "postId", source = "post.id")
     @Mapping(source = "likes", target = "likeIds", qualifiedByName = "getListOfIdFromListOfLikes",
             conditionExpression = "java(comment.getLikes() != null)")
     CommentReadDto toReadDto(Comment comment);
 
     Comment toUpdate(@MappingTarget Comment comment, CommentUpdateDto dto);
 
+    @Named("getListOfIdFromListOfLikes")
     default List<Long> getListOfIdFromListOfLikes(List<Like> likes) {
         return likes.stream().map(Like::getId).toList();
     }
