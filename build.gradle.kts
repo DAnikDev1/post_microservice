@@ -32,11 +32,14 @@ dependencies {
     implementation("org.springdoc:springdoc-openapi-starter-webmvc-ui:2.0.3")
     implementation("org.springframework.cloud:spring-cloud-starter-openfeign")
     implementation("org.springframework.retry:spring-retry")
+    implementation ("org.hibernate.validator:hibernate-validator:8.0.1.Final") // For tests
+    implementation ("org.glassfish:jakarta.el:4.0.2") // For tests
 
     implementation("org.mapstruct:mapstruct:1.5.3.Final")
     annotationProcessor("org.projectlombok:lombok")
     annotationProcessor("org.mapstruct:mapstruct-processor:1.5.3.Final")
     compileOnly("org.projectlombok:lombok")
+
 
     runtimeOnly("com.h2database:h2")
     runtimeOnly("org.postgresql:postgresql")

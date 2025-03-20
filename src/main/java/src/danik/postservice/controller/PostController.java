@@ -11,6 +11,8 @@ import src.danik.postservice.dto.post.PostReadDto;
 import src.danik.postservice.dto.post.PostUpdateDto;
 import src.danik.postservice.service.PostService;
 
+import java.util.List;
+
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/api/v1/posts")
@@ -41,6 +43,11 @@ public class PostController {
     @ResponseStatus(HttpStatus.OK)
     public PostReadDto publishPost(@PathVariable @Valid @Positive Long postId) {
         return postService.publishPost(postId);
+    }
+    @GetMapping
+    @ResponseStatus(HttpStatus.OK)
+    public List<PostReadDto> getAllPosts() {
+        return postService.getAllPosts();
     }
 
 }

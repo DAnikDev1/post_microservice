@@ -8,6 +8,8 @@ import src.danik.postservice.dto.post.PostCreateDto;
 import src.danik.postservice.dto.post.PostReadDto;
 import src.danik.postservice.dto.post.PostUpdateDto;
 
+import java.util.List;
+
 public interface PostService {
     PostReadDto getPostReadDtoById(@Valid Long postId);
 
@@ -18,4 +20,6 @@ public interface PostService {
     PostReadDto updatePost(@PathVariable @Valid Long postId, @NotNull @Valid PostUpdateDto postUpdateDto);
 
     PostReadDto publishPost(@Valid @Positive Long postId);
+
+    List<PostReadDto> getAllPosts();
 }

@@ -13,6 +13,8 @@ import src.danik.postservice.repository.PostRepository;
 import src.danik.postservice.service.PostService;
 import src.danik.postservice.service.validator.PostChecker;
 
+import java.util.List;
+
 @Service
 @RequiredArgsConstructor
 public class PostServiceImpl implements PostService {
@@ -71,5 +73,10 @@ public class PostServiceImpl implements PostService {
         post.setPublished(true);
         Post result = postRepository.save(post);
         return postMapper.toReadDto(result);
+    }
+
+    @Override
+    public List<PostReadDto> getAllPosts() {
+        return postRepository.findAll().stream().map(postMapper::toReadDto).toList();
     }
 }
