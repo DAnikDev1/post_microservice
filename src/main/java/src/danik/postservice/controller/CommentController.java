@@ -19,9 +19,9 @@ import java.util.List;
 public class CommentController {
     private final CommentService commentService;
 
-    @GetMapping
+    @GetMapping("/{postId}")
     @ResponseStatus(HttpStatus.OK)
-    public List<CommentReadDto> findAllCommentsByPostId(@NotNull @Positive Long postId) {
+    public List<CommentReadDto> findAllCommentsByPostId(@PathVariable @NotNull @Positive Long postId) {
         return commentService.getCommentsByPostId(postId);
     }
 

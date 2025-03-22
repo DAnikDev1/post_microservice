@@ -95,6 +95,8 @@ public class PostControllerTest {
                 .andExpect(MockMvcResultMatchers.jsonPath("$.id").value(1L))
                 .andExpect(MockMvcResultMatchers.jsonPath("$.userId").value(2L))
                 .andExpect(MockMvcResultMatchers.jsonPath("$.content").value("Hello tests"));
+
+        verify(postService).createPost(any(PostCreateDto.class));
     }
     @Test
     public void testThatPublishPostIsSuccessful() throws Exception {
