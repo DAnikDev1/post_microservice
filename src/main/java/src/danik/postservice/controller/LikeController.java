@@ -18,27 +18,27 @@ public class LikeController {
     private final LikeService likeService;
 
     @PostMapping("/post")
-    public ResponseEntity<LikeDto> userLikePost(@Valid @RequestBody LikeDto likeDto) {
-        LikeDto answer = likeService.userLike(likeDto, LikeType.POST);
-        return ResponseEntity.status(HttpStatus.CREATED).body(answer);
+    @ResponseStatus(HttpStatus.CREATED)
+    public LikeDto userLikePost(@Valid @RequestBody LikeDto likeDto) {
+        return likeService.userLike(likeDto, LikeType.POST);
     }
 
     @DeleteMapping("/post/{likeId}")
-    public ResponseEntity<Void> userRemoveLikeFromPost(@PathVariable @NotNull @Positive Long likeId, @Valid @RequestBody LikeDto likeDto) {
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    public void userRemoveLikeFromPost(@PathVariable @NotNull @Positive Long likeId, @Valid @RequestBody LikeDto likeDto) {
         likeService.removeLike(likeId, LikeType.POST, likeDto);
-        return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
 
     @PostMapping("/comment")
-    public ResponseEntity<LikeDto> userLikeComment(@Valid @RequestBody LikeDto likeDto) {
-        LikeDto answer = likeService.userLike(likeDto, LikeType.COMMENT);
-        return ResponseEntity.status(HttpStatus.CREATED).body(answer);
+    @ResponseStatus(HttpStatus.CREATED)
+    public LikeDto userLikeComment(@Valid @RequestBody LikeDto likeDto) {
+        return likeService.userLike(likeDto, LikeType.COMMENT);
     }
 
     @DeleteMapping("/comment/{likeId}")
-    public ResponseEntity<Void> userRemoveLikeFromComment(@PathVariable @NotNull @Positive Long likeId, @Valid @RequestBody LikeDto likeDto) {
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    public void userRemoveLikeFromComment(@PathVariable @NotNull @Positive Long likeId, @Valid @RequestBody LikeDto likeDto) {
         likeService.removeLike(likeId, LikeType.COMMENT, likeDto);
-        return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
 
 }

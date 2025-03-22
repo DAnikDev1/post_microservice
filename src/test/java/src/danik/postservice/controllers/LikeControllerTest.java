@@ -2,7 +2,9 @@ package src.danik.postservice.controllers;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import org.hamcrest.Matchers;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -16,15 +18,23 @@ import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
+import org.springframework.test.web.servlet.setup.MockMvcBuilders;
+import org.springframework.validation.beanvalidation.LocalValidatorFactoryBean;
 import src.danik.postservice.controller.LikeController;
 import src.danik.postservice.controller.PostController;
 import src.danik.postservice.dto.LikeDto;
 import src.danik.postservice.entity.Like;
+
+import static org.mockito.ArgumentMatchers.eq;
+
+import src.danik.postservice.repository.types.LikeType;
 import src.danik.postservice.service.LikeService;
 
 import java.util.List;
 
-import static org.mockito.Mockito.when;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.*;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @ExtendWith(MockitoExtension.class)
 public class LikeControllerTest {
@@ -38,27 +48,81 @@ public class LikeControllerTest {
 
     private final ObjectMapper objectMapper = new ObjectMapper();
 
+    @BeforeEach
+    void setUp() {
+        LocalValidatorFactoryBean validator = new LocalValidatorFactoryBean();
+        validator.afterPropertiesSet();
+
+        mockMvc = MockMvcBuilders.standaloneSetup(likeController)
+                .setValidator(validator)
+                .build();
+
+        objectMapper.registerModule(new JavaTimeModule());
+    }
+
     @Test
-    void shouldReturnAllPosts() throws Exception {
-        List<LikeDto> posts = List.of(new LikeDto(1L), new LikeDto(2L));
-//
-//        // Говорим, что при вызове getAllPosts(), сервис должен вернуть наш список
-//        when(postService.getAllPosts()).thenReturn(posts);
-//
-//        // Выполняем GET-запрос к контроллеру
-//        mockMvc.perform(get("/api/v1/posts")
-//                        .contentType(MediaType.APPLICATION_JSON))
-//                // Проверяем результат
-//                .andExpect(status().isOk())  // HTTP 200 OK
-//                .andExpect(content().contentType(MediaType.APPLICATION_JSON))
-//                .andExpect(jsonPath("$", hasSize(2)))  // Массив из 2 элементов
-//                .andExpect(jsonPath("$[0].id", is(1)))
-//                .andExpect(jsonPath("$[0].title", is("Заголовок 1")))
-//                .andExpect(jsonPath("$[1].id", is(2)))
-//                .andExpect(jsonPath("$[1].title", is("Заголовок 2")));
-//
-//        // Проверяем, что метод сервиса был вызван
-//        verify(postService).getAllPosts();
+    public void testThatUserLikePostIsCreated() throws Exception {
+        LikeDto answer = createExampleLikeDto();
+        LikeDto likeDtoBody = createExampleLikeDto();
+
+        String json = objectMapper.writeValueAsString(likeDtoBody);
+
+        when(likeService.userLike(any(LikeDto.class), eq(LikeType.POST))).thenReturn(answer);
+
+        mockMvc.perform(MockMvcRequestBuilders.post("/api/v1/likes/post")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(json))
+                .andExpect(status().isCreated())
+                .andExpect(MockMvcResultMatchers.jsonPath("$.likeId").value(5));
+
+        verify(likeService).userLike(any(LikeDto.class), eq(LikeType.POST));
+    }
+
+    @Test
+    public void testThatUserLikeCommentIsCreated() throws Exception {
+        LikeDto answer = createExampleLikeDto();
+        LikeDto likeDtoBody = createExampleLikeDto();
+
+        String json = objectMapper.writeValueAsString(likeDtoBody);
+
+        when(likeService.userLike(any(LikeDto.class), eq(LikeType.COMMENT))).thenReturn(answer);
+
+        mockMvc.perform(MockMvcRequestBuilders.post("/api/v1/likes/comment")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(json))
+                .andExpect(status().isCreated())
+                .andExpect(MockMvcResultMatchers.jsonPath("$.likeId").value(5));
+
+        verify(likeService).userLike(any(LikeDto.class), eq(LikeType.COMMENT));
+    }
+
+    @Test
+    public void testThatUserRemoveLikeFromPostIsNoContent() throws Exception {
+        LikeDto likeDtoBody = createExampleLikeDto();
+        doNothing().when(likeService).removeLike(any(Long.class), eq(LikeType.POST), any(LikeDto.class));
+
+        String json = objectMapper.writeValueAsString(likeDtoBody);
+
+        mockMvc.perform(MockMvcRequestBuilders.delete("/api/v1/likes/post/5")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(json))
+                .andExpect(status().isNoContent());
+
+        verify(likeService).removeLike(any(Long.class), eq(LikeType.POST), any(LikeDto.class));
+    }
+    @Test
+    public void testThatUserRemoveLikeFromCommentIsNoContent() throws Exception {
+        LikeDto likeDtoBody = createExampleLikeDto();
+        doNothing().when(likeService).removeLike(any(Long.class), eq(LikeType.COMMENT), any(LikeDto.class));
+
+        String json = objectMapper.writeValueAsString(likeDtoBody);
+
+        mockMvc.perform(MockMvcRequestBuilders.delete("/api/v1/likes/comment/5")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(json))
+                .andExpect(status().isNoContent());
+
+        verify(likeService).removeLike(any(Long.class), eq(LikeType.COMMENT), any(LikeDto.class));
     }
 
     public static LikeDto createExampleLikeDto() {
