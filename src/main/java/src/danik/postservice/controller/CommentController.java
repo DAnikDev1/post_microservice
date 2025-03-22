@@ -1,5 +1,7 @@
 package src.danik.postservice.controller;
 
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Positive;
@@ -16,29 +18,34 @@ import java.util.List;
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/api/v1/comments")
+@Tag(name = "Comment API", description = "API for managing comments")
 public class CommentController {
     private final CommentService commentService;
 
     @GetMapping("/{postId}")
     @ResponseStatus(HttpStatus.OK)
+    @Operation(summary = "Get list of comments using Id of Post")
     public List<CommentReadDto> findAllCommentsByPostId(@PathVariable @NotNull @Positive Long postId) {
         return commentService.getCommentsByPostId(postId);
     }
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
+    @Operation(summary = "Create new comment and return it")
     public CommentReadDto createComment(@Valid @RequestBody CommentCreateDto commentCreateDto) {
         return commentService.createComment(commentCreateDto);
     }
 
     @DeleteMapping("/{commentId}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
+    @Operation(summary = "Delete comment using Id")
     public void deleteComment(@PathVariable @Valid @Positive Long commentId) {
         commentService.deleteComment(commentId);
     }
 
     @PutMapping
     @ResponseStatus(HttpStatus.OK)
+    @Operation(summary = "Update existed comment using commentUpdateDto and return updated comment")
     public CommentReadDto updateExistedComment(@Valid @RequestBody CommentUpdateDto commentUpdateDto) {
         return commentService.updateComment(commentUpdateDto);
     }

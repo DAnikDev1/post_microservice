@@ -1,5 +1,7 @@
 package src.danik.postservice.controller;
 
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Positive;
@@ -15,37 +17,49 @@ import java.util.List;
 
 @RestController
 @RequiredArgsConstructor
+@Tag(name = "Post API", description = "API for managing Posts")
 @RequestMapping("/api/v1/posts")
 public class PostController {
     private final PostService postService;
 
     @GetMapping("/{postId}")
+    @Operation(summary = "Get post using id")
     @ResponseStatus(HttpStatus.OK)
     public PostReadDto getPostById(@PathVariable @Valid @Positive Long postId) {
         return postService.getPostReadDtoById(postId);
     }
+
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
+    @Operation(summary = "Create new post and return it")
     public PostReadDto createPost(@RequestBody @NotNull @Valid PostCreateDto postCreateDto) {
         return postService.createPost(postCreateDto);
     }
+
     @DeleteMapping("/{postId}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
+    @Operation(summary = "Delete post using id")
     public void deletePostById(@PathVariable @Valid @Positive Long postId) {
         postService.deletePostById(postId);
     }
+
     @PutMapping("/{postId}")
     @ResponseStatus(HttpStatus.OK)
+    @Operation(summary = "Update post using id and postUpdateDto")
     public PostReadDto updatePost(@PathVariable @Valid Long postId, @RequestBody @NotNull @Valid PostUpdateDto postUpdateDto) {
         return postService.updatePost(postId, postUpdateDto);
     }
+
     @PostMapping("/{postId}")
     @ResponseStatus(HttpStatus.OK)
+    @Operation(summary = "Set post published to true")
     public PostReadDto publishPost(@PathVariable @Valid @Positive Long postId) {
         return postService.publishPost(postId);
     }
+
     @GetMapping
     @ResponseStatus(HttpStatus.OK)
+    @Operation(summary = "get All existed posts")
     public List<PostReadDto> getAllPosts() {
         return postService.getAllPosts();
     }
