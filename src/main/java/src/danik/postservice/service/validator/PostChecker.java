@@ -27,8 +27,8 @@ public class PostChecker {
         }
     }
 
-    public void checkThatPostIsNotPublished(Post post) {
-        if (!post.isPublished()) {
+    public void checkThatPostIsPublished(Post post) {
+        if (post.isPublished()) {
             throw new DataValidationException("Post is already published");
         }
     }

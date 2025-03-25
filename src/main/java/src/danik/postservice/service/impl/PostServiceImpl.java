@@ -66,7 +66,7 @@ public class PostServiceImpl implements PostService {
     public PostReadDto publishPost(Long postId) {
         Post post = getPostById(postId);
 
-        postChecker.checkThatPostIsNotPublished(post);
+        postChecker.checkThatPostIsPublished(post);
         postChecker.checkThatPostIsAlreadyDeleted(post);
         postChecker.checkThatUserIsExist(post);
 
