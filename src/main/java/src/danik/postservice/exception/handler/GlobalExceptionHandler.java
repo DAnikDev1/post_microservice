@@ -31,7 +31,14 @@ public class GlobalExceptionHandler {
     @ResponseStatus(HttpStatus.SERVICE_UNAVAILABLE)
     public ErrorResponse processFeignException(FeignException e) {
         log.error("Feign exception: {}", e.getMessage());
-        return ErrorResponse.builder().message(e.getMessage()).status(400).build();
+        return ErrorResponse.builder().message(e.getMessage()).status(503).build();
+    }
+
+    @ExceptionHandler(Exception.class)
+    @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
+    public ErrorResponse processOtherException(Exception e) {
+        log.error("Other exception: {}", e.getMessage());
+        return ErrorResponse.builder().message(e.getMessage()).status(500).build();
     }
 
 }
