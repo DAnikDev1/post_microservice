@@ -34,6 +34,7 @@ dependencies {
     implementation("org.springframework.retry:spring-retry")
     implementation ("org.hibernate.validator:hibernate-validator:8.0.1.Final") // For tests
     implementation ("org.glassfish:jakarta.el:4.0.2") // For tests
+    implementation("org.springframework.kafka:spring-kafka")
 
     implementation("org.mapstruct:mapstruct:1.5.3.Final")
     annotationProcessor("org.projectlombok:lombok")
