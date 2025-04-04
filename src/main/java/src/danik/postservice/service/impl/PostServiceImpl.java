@@ -14,8 +14,6 @@ import src.danik.postservice.kafka.event.notifications.PostPublishedEvent;
 import src.danik.postservice.mapper.post.PostMapper;
 import src.danik.postservice.repository.PostRepository;
 import src.danik.postservice.service.PostService;
-import src.danik.postservice.service.listener.NotificationEventListener;
-import src.danik.postservice.service.producer.NotificationProducer;
 import src.danik.postservice.service.validator.PostChecker;
 
 import java.util.List;
@@ -72,6 +70,7 @@ public class PostServiceImpl implements PostService {
     }
 
     @Override
+    @Transactional
     public PostReadDto publishPost(Long postId) {
         Post post = getPostById(postId);
 
