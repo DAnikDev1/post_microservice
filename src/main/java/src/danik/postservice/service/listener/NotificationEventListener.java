@@ -6,11 +6,11 @@ import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.event.TransactionPhase;
 import org.springframework.transaction.event.TransactionalEventListener;
-import src.danik.postservice.kafka.event.NotificationEvent;
+import src.danik.dto.NotificationEvent;
+import src.danik.dto.NotificationType;
 import src.danik.postservice.kafka.event.notifications.*;
 import src.danik.postservice.service.impl.UserServiceImpl;
 import src.danik.postservice.service.producer.NotificationProducer;
-import src.danik.postservice.types.NotificationType;
 
 @RequiredArgsConstructor
 @Service

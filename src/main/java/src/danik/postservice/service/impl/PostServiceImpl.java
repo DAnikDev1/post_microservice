@@ -39,6 +39,7 @@ public class PostServiceImpl implements PostService {
 
     @Override
     @Transactional
+    // Создавать на основе header, а не переменной
     public PostReadDto createPost(PostCreateDto postCreateDto) {
         Post post = postMapper.toEntity(postCreateDto);
         postChecker.checkThatUserIsExist(post);

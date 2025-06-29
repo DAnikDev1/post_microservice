@@ -11,7 +11,6 @@ import src.danik.postservice.service.impl.UserServiceImpl;
 @RequiredArgsConstructor
 public class PostChecker {
     private final UserServiceImpl userService;
-    private final PostMapper postMapper;
 
     public void checkThatUserIsExist(Post post) {
         if (post.getUserId() != null && !userService.isUserExist(post.getUserId())) {

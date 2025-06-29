@@ -22,9 +22,19 @@ configurations {
 
 repositories {
     mavenCentral()
+    maven {
+        name = "GitHubPackages"
+        url = uri("https://maven.pkg.github.com/DAnikDev1/baseDto")
+        credentials {
+            username = property("gpr.user") as String?
+            password = property("gpr.key") as String?
+        }
+    }
 }
 
 dependencies {
+    implementation("com.github.DAnikDev1:base-dto:1.0.2")
+
     implementation("org.springframework.boot:spring-boot-starter-data-jdbc")
     implementation("org.springframework.boot:spring-boot-starter-data-jpa")
     implementation("org.springframework.boot:spring-boot-starter-jdbc")
