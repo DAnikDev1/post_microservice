@@ -9,6 +9,8 @@ import org.springframework.transaction.event.TransactionalEventListener;
 import src.danik.dto.NotificationEvent;
 import src.danik.dto.NotificationType;
 import src.danik.postservice.kafka.event.notifications.*;
+import src.danik.postservice.service.CommentService;
+import src.danik.postservice.service.LikeService;
 import src.danik.postservice.service.impl.UserServiceImpl;
 import src.danik.postservice.service.producer.NotificationProducer;
 
@@ -19,15 +21,18 @@ public class NotificationEventListener {
 
     private final NotificationProducer notificationProducer;
     private final UserServiceImpl userService;
+    private final LikeService likeService;
+    private final CommentService commentService;
 
     @Async
     @TransactionalEventListener(phase = TransactionPhase.AFTER_COMMIT)
     public void sendNewCommentEvent(NewCommentEvent commentEvent) {
         String username = userService.getUserById(commentEvent.commenterId()).username();
+        Long postId = commentService.getCommentById(commentEvent.commentId()).getPost().getId();
         NotificationEvent notificationEvent = NotificationEvent.builder()
                 .eventId(commentEvent.commentId())
                 .userId(commentEvent.postAuthorId())
-                .text(String.format("User %s wrote a comment under your post", username))
+                .text(String.format("User %s wrote a comment under your post with id = %d", username, postId))
                 .notificationType(NotificationType.NEW_COMMENT)
                 .build();
         sendPreparedNotificationEvent(notificationEvent);
@@ -38,7 +43,7 @@ public class NotificationEventListener {
         NotificationEvent notificationEvent = NotificationEvent.builder()
                 .eventId(postPublishedEvent.postId())
                 .userId(postPublishedEvent.postAuthorId())
-                .text("Your post was successfully published")
+                .text(String.format("Your post was successfully published [id %s]", postPublishedEvent.postId()))
                 .notificationType(NotificationType.POST_PUBLISHED)
                 .build();
         sendPreparedNotificationEvent(notificationEvent);
@@ -49,7 +54,7 @@ public class NotificationEventListener {
         NotificationEvent notificationEvent = NotificationEvent.builder()
                 .eventId(postDeletedEvent.postId())
                 .userId(postDeletedEvent.postAuthorId())
-                .text("Your post was deleted")
+                .text(String.format("Your post was deleted [id %s]", postDeletedEvent.postId()))
                 .notificationType(NotificationType.POST_DELETED)
                 .build();
         sendPreparedNotificationEvent(notificationEvent);
@@ -58,10 +63,11 @@ public class NotificationEventListener {
     @TransactionalEventListener(phase = TransactionPhase.AFTER_COMMIT)
     public void sendNewPostLikeEvent(NewPostLikeEvent newPostLikeEvent) {
         String username = userService.getUserById(newPostLikeEvent.likerId()).username();
+        Long postId = likeService.findById(newPostLikeEvent.likeId()).getPost().getId();
         NotificationEvent notificationEvent = NotificationEvent.builder()
                 .eventId(newPostLikeEvent.likeId())
                 .userId(newPostLikeEvent.postAuthorId())
-                .text(String.format("User %s put like on your post", username))
+                .text(String.format("User %s put like on your post with id = %d", username, postId))
                 .notificationType(NotificationType.NEW_POST_LIKE)
                 .build();
         sendPreparedNotificationEvent(notificationEvent);
@@ -70,10 +76,11 @@ public class NotificationEventListener {
     @TransactionalEventListener(phase = TransactionPhase.AFTER_COMMIT)
     public void sendNewCommentLikeEvent(NewCommentLikeEvent newCommentLikeEvent) {
         String username = userService.getUserById(newCommentLikeEvent.likerId()).username();
+        Long commentId = likeService.findById(newCommentLikeEvent.likeId()).getComment().getId();
         NotificationEvent notificationEvent = NotificationEvent.builder()
                 .eventId(newCommentLikeEvent.likeId())
                 .userId(newCommentLikeEvent.commentAuthorId())
-                .text(String.format("User %s put like on your comment", username))
+                .text(String.format("User %s put like on your comment with id = %d", username, commentId))
                 .notificationType(NotificationType.NEW_COMMENT_LIKE)
                 .build();
         sendPreparedNotificationEvent(notificationEvent);

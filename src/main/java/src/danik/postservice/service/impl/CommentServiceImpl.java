@@ -30,6 +30,7 @@ public class CommentServiceImpl implements CommentService {
 
     private final ApplicationEventPublisher applicationEventPublisher;
 
+    @Override
     public Comment getCommentById(long id) {
         return commentRepository.findById(id)
                 .orElseThrow(() -> new EntityNotFoundException(String.format("Comment with id = %d was not found", id)));

@@ -11,6 +11,8 @@ import src.danik.postservice.entity.Comment;
 import java.util.List;
 
 public interface CommentService {
+    Comment getCommentById(long id);
+
     List<CommentReadDto> getCommentsByPostId(@NotNull @Positive Long postId);
 
     CommentReadDto createComment(CommentCreateDto commentCreateDto);

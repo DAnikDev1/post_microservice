@@ -32,6 +32,7 @@ public class LikeServiceImpl implements LikeService {
 
     private final ApplicationEventPublisher applicationEventPublisher;
 
+    @Override
     public Like findById(@NotNull @Positive Long id) {
         return likeRepository.findById(id)
                 .orElseThrow(() -> new EntityNotFoundException(String.format("Like with id = %d was not found", id)));
