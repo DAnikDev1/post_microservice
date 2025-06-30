@@ -3,12 +3,14 @@ package src.danik.postservice.config.user;
 import jakarta.servlet.*;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
+import org.springframework.stereotype.Component;
 
 import java.io.IOException;
 
 @RequiredArgsConstructor
+@Component
 public class UserHeaderFilter implements Filter {
-    private final UserContext userContext = new UserContext();
+    private final UserContext userContext;
 
     @Override
     public void doFilter(ServletRequest servletRequest, ServletResponse servletResponse, FilterChain filterChain) throws IOException, ServletException {

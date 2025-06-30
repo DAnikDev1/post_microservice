@@ -55,8 +55,8 @@ public class CommentControllerTest {
     @Test
     public void testThatFindAllCommentsByPostIdIsSuccessful() throws Exception {
         List<CommentReadDto> comments = List.of(
-                CommentReadDto.builder().content("Hello comment test 1").userId(1L).postId(2L).commentId(3L).build(),
-                CommentReadDto.builder().content("Hello comment test 2").userId(2L).postId(2L).commentId(4L).build()
+                CommentReadDto.builder().content("Hello comment test 1").id(1L).userId(1L).postId(2L).commentId(3L).build(),
+                CommentReadDto.builder().content("Hello comment test 2").id(2L).userId(2L).postId(2L).commentId(4L).build()
         );
         when(commentService.getCommentsByPostId(2L)).thenReturn(comments);
 
@@ -64,10 +64,12 @@ public class CommentControllerTest {
                 .andExpect(status().isOk())
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON))
                 .andExpect(MockMvcResultMatchers.jsonPath("$", hasSize(2)))
+                .andExpect(MockMvcResultMatchers.jsonPath("$[0].id").value("1"))
                 .andExpect(MockMvcResultMatchers.jsonPath("$[0].content").value("Hello comment test 1"))
                 .andExpect(MockMvcResultMatchers.jsonPath("$[0].userId").value("1"))
                 .andExpect(MockMvcResultMatchers.jsonPath("$[0].postId").value("2"))
                 .andExpect(MockMvcResultMatchers.jsonPath("$[0].commentId").value("3"))
+                .andExpect(MockMvcResultMatchers.jsonPath("$[1].id").value("2"))
                 .andExpect(MockMvcResultMatchers.jsonPath("$[1].content").value("Hello comment test 2"))
                 .andExpect(MockMvcResultMatchers.jsonPath("$[1].userId").value("2"))
                 .andExpect(MockMvcResultMatchers.jsonPath("$[1].postId").value("2"))
@@ -89,6 +91,7 @@ public class CommentControllerTest {
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(json))
                 .andExpect(status().isCreated())
+                .andExpect(MockMvcResultMatchers.jsonPath("$.id").value("1"))
                 .andExpect(MockMvcResultMatchers.jsonPath("$.postId").value(2L))
                 .andExpect(MockMvcResultMatchers.jsonPath("$.userId").value(1L))
                 .andExpect(MockMvcResultMatchers.jsonPath("$.commentId").value(3L))
@@ -122,6 +125,7 @@ public class CommentControllerTest {
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(json))
                 .andExpect(status().isOk())
+                .andExpect(MockMvcResultMatchers.jsonPath("$.id").value("1"))
                 .andExpect(MockMvcResultMatchers.jsonPath("$.postId").value(2L))
                 .andExpect(MockMvcResultMatchers.jsonPath("$.userId").value(1L))
                 .andExpect(MockMvcResultMatchers.jsonPath("$.commentId").value(3L))
@@ -132,6 +136,6 @@ public class CommentControllerTest {
     }
 
     private CommentReadDto createExampleCommentReadDto() {
-        return CommentReadDto.builder().content("Hello comment test").userId(1L).postId(2L).commentId(3L).build();
+        return CommentReadDto.builder().id(1L).content("Hello comment test").userId(1L).postId(2L).commentId(3L).build();
     }
 }

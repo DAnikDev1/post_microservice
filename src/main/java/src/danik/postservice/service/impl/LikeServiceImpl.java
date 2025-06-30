@@ -51,7 +51,7 @@ public class LikeServiceImpl implements LikeService {
     }
     private Like assignLikeToPostOrComment(LikeDto likeDto, LikeType likeType, UserDto userDto) {
         Like like = likeMapper.toEntity(likeDto);
-        like.setId(userDto.id());
+        like.setUserId(userDto.id());
         if (likeType == LikeType.COMMENT) {
             if (likeRepository.findByCommentIdAndUserId(likeDto.likeId(), userDto.id()).isPresent()) {
                 throw new DataValidationException("Comment already have like");

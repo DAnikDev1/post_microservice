@@ -24,8 +24,8 @@ public class Comment {
     @Column(name = "user_id")
     private Long userId;
 
-    @Column(name = "context", nullable = false, length = 2048)
-    private String context;
+    @Column(name = "content", nullable = false, length = 2048)
+    private String content;
 
     @OneToMany(mappedBy = "comment", orphanRemoval = true)
     private List<Like> likes;

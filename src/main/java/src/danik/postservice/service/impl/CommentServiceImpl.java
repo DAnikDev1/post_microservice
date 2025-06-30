@@ -51,7 +51,7 @@ public class CommentServiceImpl implements CommentService {
 
         Comment comment = commentMapper.toEntity(commentCreateDto);
         comment.setPost(post);
-        post.getComments().add(comment); // Возможно стоит инкапсулировать но не уверен
+        post.getComments().add(comment);
 
         Comment result = commentRepository.save(comment);
         log.info("Created new comment with id = {}", result.getId());

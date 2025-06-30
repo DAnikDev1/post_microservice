@@ -10,6 +10,7 @@ import java.util.List;
 @Builder
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class CommentReadDto {
+    private Long id;
     private String content;
     private Long postId;
     private Long commentId;
