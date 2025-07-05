@@ -56,12 +56,18 @@ public class LikeServiceImpl implements LikeService {
             if (likeRepository.findByCommentIdAndUserId(likeDto.likeId(), userDto.id()).isPresent()) {
                 throw new DataValidationException("Comment already have like");
             }
-            like.setComment(commentService.getCommentById(likeDto.likeId()));
+            Comment comment = commentService.getCommentById(likeDto.likeId());
+            like.setComment(comment);
+            comment.setLikesCount(comment.getLikesCount() + 1);
+            commentService.saveComment(comment);
         } else if (likeType == LikeType.POST) {
             if (likeRepository.findByPostIdAndUserId(likeDto.likeId(), userDto.id()).isPresent()) {
                 throw new DataValidationException("Post already have like");
             }
-            like.setPost(postService.getPostById(likeDto.likeId()));
+            Post post = postService.getPostById(likeDto.likeId());
+            like.setPost(post);
+            post.setLikesCount(post.getLikesCount() + 1);
+            postService.savePost(post);
         }
         return like;
     }
@@ -80,11 +86,17 @@ public class LikeServiceImpl implements LikeService {
                 throw new DataValidationException("User cannot remove Like on comment because ID doesn't match");
             }
             likeRepository.deleteByCommentIdAndUserId(likeDto.likeId(), userDto.id());
+            Comment comment = commentService.getCommentById(likeDto.likeId());
+            comment.setLikesCount(comment.getLikesCount() - 1);
+            commentService.saveComment(comment);
         } else if (likeType == LikeType.POST) {
             if (cantUserRemoveLike(likeId, userDto.id())) {
                 throw new DataValidationException("User cannot remove Like on post because ID doesn't match");
             }
             likeRepository.deleteByPostIdAndUserId(likeDto.likeId(), userDto.id());
+            Post post = postService.getPostById(likeDto.likeId());
+            post.setLikesCount(post.getLikesCount() - 1);
+            postService.savePost(post);
         }
     }
     public void publishLikeNotificationToListener(LikeType likeType, Like like) {

@@ -75,4 +75,9 @@ public class CommentServiceImpl implements CommentService {
 
         return commentMapper.toReadDto(commentRepository.save(comment));
     }
+
+    @Override
+    public Comment saveComment(Comment comment) {
+        return commentRepository.save(comment);
+    }
 }

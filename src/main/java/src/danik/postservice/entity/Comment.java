@@ -30,6 +30,9 @@ public class Comment {
     @OneToMany(mappedBy = "comment", orphanRemoval = true)
     private List<Like> likes;
 
+    @Column(name = "likes_count", nullable = false)
+    private int likesCount = 0;
+
     @ManyToOne
     @JoinColumn(name = "post_id", nullable = false)
     private Post post;

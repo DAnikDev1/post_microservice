@@ -39,6 +39,9 @@ public class Post {
     @Column(name = "deleted", nullable = false)
     private boolean deleted;
 
+    @Column(name = "likes_count", nullable = false)
+    private int likesCount = 0;
+
     @CreationTimestamp
     @Temporal(TemporalType.TIMESTAMP)
     @Column(name = "created_at")

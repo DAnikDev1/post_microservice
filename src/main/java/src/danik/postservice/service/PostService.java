@@ -7,6 +7,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import src.danik.postservice.dto.post.PostCreateDto;
 import src.danik.postservice.dto.post.PostReadDto;
 import src.danik.postservice.dto.post.PostUpdateDto;
+import src.danik.postservice.entity.Post;
 
 import java.util.List;
 
@@ -22,4 +23,8 @@ public interface PostService {
     PostReadDto publishPost(@Valid @Positive Long postId);
 
     List<PostReadDto> getAllPosts();
+
+    List<Post> findPopularPosts(int postsCount);
+
+    Post savePost(Post post);
 }

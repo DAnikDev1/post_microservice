@@ -11,7 +11,7 @@ public class PostReadDto {
     private Long userId;
     private String content;
     private Long id;
-    private Integer countOfLikes;
+    private Integer likesCount;
     private Boolean deleted;
     private Boolean published;
     private LocalDateTime createdAt;

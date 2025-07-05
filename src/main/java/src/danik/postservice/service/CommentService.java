@@ -20,4 +20,6 @@ public interface CommentService {
     void deleteComment(@Valid @Positive Long commentId);
 
     CommentReadDto updateComment(@Valid CommentUpdateDto commentUpdateDto);
+
+    Comment saveComment(Comment comment);
 }

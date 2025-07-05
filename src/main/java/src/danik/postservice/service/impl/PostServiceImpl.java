@@ -4,6 +4,7 @@ import jakarta.persistence.EntityNotFoundException;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.ApplicationEventPublisher;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 import src.danik.postservice.dto.post.PostCreateDto;
 import src.danik.postservice.dto.post.PostReadDto;
@@ -91,5 +92,15 @@ public class PostServiceImpl implements PostService {
     @Override
     public List<PostReadDto> getAllPosts() {
         return postRepository.findAll().stream().map(postMapper::toReadDto).toList();
+    }
+
+    @Override
+    public List<Post> findPopularPosts(int postsCount) {
+        return postRepository.findPopularPosts(PageRequest.of(0, postsCount));
+    }
+
+    @Override
+    public Post savePost(Post post) {
+        return postRepository.save(post);
     }
 }
