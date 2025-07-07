@@ -9,6 +9,7 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import src.danik.postservice.exception.DataValidationException;
 import src.danik.postservice.exception.ExistedEntityException;
+import src.danik.postservice.exception.NoAccessException;
 
 @RestControllerAdvice
 @Slf4j
@@ -24,6 +25,13 @@ public class GlobalExceptionHandler {
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     public ErrorResponse processBadRequestException(DataValidationException e) {
         log.error("Data validation exception: {}", e.getMessage());
+        return ErrorResponse.builder().message(e.getMessage()).build();
+    }
+
+    @ExceptionHandler(NoAccessException.class)
+    @ResponseStatus(HttpStatus.FORBIDDEN)
+    public ErrorResponse processBadRequestException(NoAccessException e) {
+        log.error("No access exception: {}", e.getMessage());
         return ErrorResponse.builder().message(e.getMessage()).build();
     }
 

@@ -10,6 +10,7 @@ import src.danik.postservice.dto.post.PostUpdateDto;
 import src.danik.postservice.entity.Post;
 
 import java.util.List;
+import java.util.Set;
 
 public interface PostService {
     PostReadDto getPostReadDtoById(@Valid Long postId);
@@ -27,4 +28,6 @@ public interface PostService {
     List<Post> findPopularPosts(int postsCount);
 
     Post savePost(Post post);
+
+    Set<Long> findAuthorOfPopularPosts(int postsCount);
 }

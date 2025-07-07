@@ -3,6 +3,9 @@ package src.danik.postservice.service.impl;
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.CachePut;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
@@ -18,6 +21,8 @@ import src.danik.postservice.service.PostService;
 import src.danik.postservice.service.validator.PostChecker;
 
 import java.util.List;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -34,13 +39,13 @@ public class PostServiceImpl implements PostService {
     }
 
     @Override
+    @Cacheable("posts")
     public PostReadDto getPostReadDtoById(Long postId) {
         return postMapper.toReadDto(getPostById(postId));
     }
 
     @Override
     @Transactional
-    // Создавать на основе header, а не переменной
     public PostReadDto createPost(PostCreateDto postCreateDto) {
         Post post = postMapper.toEntity(postCreateDto);
         postChecker.checkThatUserIsExist(post);
@@ -51,6 +56,7 @@ public class PostServiceImpl implements PostService {
 
     @Override
     @Transactional
+    @CacheEvict("posts")
     public void deletePostById(Long postId) {
         Post post = getPostById(postId);
         postChecker.checkThatPostIsAlreadyDeleted(post);
@@ -63,6 +69,7 @@ public class PostServiceImpl implements PostService {
     }
 
     @Override
+    @CacheEvict(value = "posts", key = "#postId")
     public PostReadDto updatePost(Long postId, PostUpdateDto postUpdateDto) {
         Post post = getPostById(postId);
         post.setContent(postUpdateDto.getContent());
@@ -73,6 +80,7 @@ public class PostServiceImpl implements PostService {
 
     @Override
     @Transactional
+    @CachePut(value = "posts", key = "#postId")
     public PostReadDto publishPost(Long postId) {
         Post post = getPostById(postId);
 
@@ -95,8 +103,17 @@ public class PostServiceImpl implements PostService {
     }
 
     @Override
+    @Cacheable("popularPosts")
     public List<Post> findPopularPosts(int postsCount) {
         return postRepository.findPopularPosts(PageRequest.of(0, postsCount));
+    }
+
+    @Override
+    public Set<Long> findAuthorOfPopularPosts(int postsCount) {
+        List<Post> posts = findPopularPosts(postsCount);
+        return posts.stream()
+                .map(Post::getUserId)
+                .collect(Collectors.toSet());
     }
 
     @Override
