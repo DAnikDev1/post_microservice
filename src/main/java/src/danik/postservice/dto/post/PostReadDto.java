@@ -1,11 +1,12 @@
 package src.danik.postservice.dto.post;
 
-import lombok.Builder;
-import lombok.Data;
+import lombok.*;
 
 import java.time.LocalDateTime;
 
 @Data
+@AllArgsConstructor
+@NoArgsConstructor
 @Builder
 public class PostReadDto {
     private Long userId;

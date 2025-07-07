@@ -40,7 +40,7 @@ public class Post {
     private boolean deleted;
 
     @Column(name = "likes_count", nullable = false)
-    private int likesCount = 0;
+    private int likesCount;
 
     @CreationTimestamp
     @Temporal(TemporalType.TIMESTAMP)

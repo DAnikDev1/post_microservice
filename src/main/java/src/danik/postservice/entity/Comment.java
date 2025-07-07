@@ -31,7 +31,7 @@ public class Comment {
     private List<Like> likes;
 
     @Column(name = "likes_count", nullable = false)
-    private int likesCount = 0;
+    private int likesCount;
 
     @ManyToOne
     @JoinColumn(name = "post_id", nullable = false)

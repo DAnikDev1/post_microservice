@@ -6,6 +6,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.CachePut;
 import org.springframework.cache.annotation.Cacheable;
+import org.springframework.cache.annotation.Caching;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
@@ -56,7 +57,10 @@ public class PostServiceImpl implements PostService {
 
     @Override
     @Transactional
-    @CacheEvict("posts")
+    @Caching(evict = {
+            @CacheEvict("posts"),
+            @CacheEvict(value = "popularPosts", allEntries = true)
+    })
     public void deletePostById(Long postId) {
         Post post = getPostById(postId);
         postChecker.checkThatPostIsAlreadyDeleted(post);
@@ -69,7 +73,10 @@ public class PostServiceImpl implements PostService {
     }
 
     @Override
-    @CacheEvict(value = "posts", key = "#postId")
+    @Caching(evict = {
+            @CacheEvict(value = "posts", key = "#postId"),
+            @CacheEvict(value = "popularPosts", allEntries = true)
+    })
     public PostReadDto updatePost(Long postId, PostUpdateDto postUpdateDto) {
         Post post = getPostById(postId);
         post.setContent(postUpdateDto.getContent());
