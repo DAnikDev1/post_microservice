@@ -4,6 +4,7 @@ import jakarta.servlet.*;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
+import src.danik.postservice.exception.NoAccessException;
 
 import java.io.IOException;
 
@@ -17,7 +18,11 @@ public class UserHeaderFilter implements Filter {
         HttpServletRequest httpServletRequest = (HttpServletRequest) servletRequest;
         String userId = httpServletRequest.getHeader("social-user-id");
         if (userId != null && !userId.isEmpty()) {
-            userContext.setUserIdVault(Long.parseLong(userId));
+            try {
+                userContext.setUserIdVault(Long.parseLong(userId));
+            } catch (NumberFormatException e) {
+                throw new NoAccessException("Request without social user id");
+            }
         }
         try {
             filterChain.doFilter(servletRequest, servletResponse);

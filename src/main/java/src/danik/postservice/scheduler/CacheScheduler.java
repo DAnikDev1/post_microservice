@@ -35,9 +35,4 @@ public class CacheScheduler {
             log.error("Error to generate hot cache", e);
         }
     }
-    @Scheduled(initialDelay = 5000, fixedDelay = Long.MAX_VALUE)
-    public void firstHotCacheInitiate() {
-        log.info("Generating hot cache for start");
-        generatePopularPostsCache();
-    }
 }

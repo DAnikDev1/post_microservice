@@ -3,7 +3,7 @@ package src.danik.postservice.service.impl;
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
-import org.springframework.cache.Cache;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.cache.CacheManager;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.CachePut;
@@ -27,6 +27,7 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class PostServiceImpl implements PostService {
@@ -45,11 +46,18 @@ public class PostServiceImpl implements PostService {
     @Override
     public PostReadDto getPostReadDtoById(Long id) {
         PostReadDto postDto = getPostFromCache("popularPosts", id);
-        if (postDto != null) return postDto;
+        if (postDto != null) {
+            log.info("Found post with id = {} in hot cache", id);
+            return postDto;
+        }
 
         postDto = getPostFromCache("posts", id);
-        if (postDto != null) return postDto;
+        if (postDto != null) {
+            log.info("Found post with id = {} in cold cache", id);
+            return postDto;
+        }
 
+        log.info("Going to db to get Post with id = {}", id);
         Post post = getPostById(id);
 
         postDto = postMapper.toReadDto(post);
@@ -150,6 +158,7 @@ public class PostServiceImpl implements PostService {
     }
 
     private void putPostInCache(String cacheName, Long id, PostReadDto dto) {
+        log.info("Putting {} in cache {} with key = {}", dto, cacheName, id);
         Optional.ofNullable(cacheManager.getCache(cacheName))
                 .ifPresent(cache -> cache.put(id, dto));
     }

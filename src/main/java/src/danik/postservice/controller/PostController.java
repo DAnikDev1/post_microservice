@@ -28,7 +28,6 @@ public class PostController {
     @Operation(summary = "Get post using id")
     @ResponseStatus(HttpStatus.OK)
     public PostReadDto getPostById(@PathVariable @Valid @Positive Long postId) {
-        log.info("Getting post with id = {}", postId);
         return postService.getPostReadDtoById(postId);
     }
 
