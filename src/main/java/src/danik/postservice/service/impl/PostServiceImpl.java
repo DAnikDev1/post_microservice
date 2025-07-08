@@ -3,9 +3,10 @@ package src.danik.postservice.service.impl;
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
+import org.springframework.cache.Cache;
+import org.springframework.cache.CacheManager;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.CachePut;
-import org.springframework.cache.annotation.Cacheable;
 import org.springframework.cache.annotation.Caching;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.data.domain.PageRequest;
@@ -22,6 +23,7 @@ import src.danik.postservice.service.PostService;
 import src.danik.postservice.service.validator.PostChecker;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -32,6 +34,7 @@ public class PostServiceImpl implements PostService {
     private final PostMapper postMapper;
     private final PostChecker postChecker;
 
+    private final CacheManager cacheManager;
     private final ApplicationEventPublisher applicationEventPublisher;
 
     public Post getPostById(long id) {
@@ -40,9 +43,19 @@ public class PostServiceImpl implements PostService {
     }
 
     @Override
-    @Cacheable("posts")
-    public PostReadDto getPostReadDtoById(Long postId) {
-        return postMapper.toReadDto(getPostById(postId));
+    public PostReadDto getPostReadDtoById(Long id) {
+        PostReadDto postDto = getPostFromCache("popularPosts", id);
+        if (postDto != null) return postDto;
+
+        postDto = getPostFromCache("posts", id);
+        if (postDto != null) return postDto;
+
+        Post post = getPostById(id);
+
+        postDto = postMapper.toReadDto(post);
+        putPostInCache("posts", id, postDto);
+
+        return postDto;
     }
 
     @Override
@@ -75,7 +88,7 @@ public class PostServiceImpl implements PostService {
     @Override
     @Caching(evict = {
             @CacheEvict(value = "posts", key = "#postId"),
-            @CacheEvict(value = "popularPosts", allEntries = true)
+            @CacheEvict(value = "popularPosts", key = "#postId")
     })
     public PostReadDto updatePost(Long postId, PostUpdateDto postUpdateDto) {
         Post post = getPostById(postId);
@@ -110,9 +123,11 @@ public class PostServiceImpl implements PostService {
     }
 
     @Override
-    @Cacheable("popularPosts")
     public List<Post> findPopularPosts(int postsCount) {
-        return postRepository.findPopularPosts(PageRequest.of(0, postsCount));
+        List<Post> posts = postRepository.findPopularPosts(PageRequest.of(0, postsCount));
+        posts.forEach(post -> putPostInCache("popularPosts", post.getId(), postMapper.toReadDto(post)));
+
+        return posts;
     }
 
     @Override
@@ -126,5 +141,16 @@ public class PostServiceImpl implements PostService {
     @Override
     public Post savePost(Post post) {
         return postRepository.save(post);
+    }
+
+    private PostReadDto getPostFromCache(String cacheName, Long id) {
+        return Optional.ofNullable(cacheManager.getCache(cacheName))
+                .map(cache -> cache.get(id, PostReadDto.class))
+                .orElse(null);
+    }
+
+    private void putPostInCache(String cacheName, Long id, PostReadDto dto) {
+        Optional.ofNullable(cacheManager.getCache(cacheName))
+                .ifPresent(cache -> cache.put(id, dto));
     }
 }

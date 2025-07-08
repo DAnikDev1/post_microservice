@@ -10,8 +10,6 @@ import src.danik.postservice.entity.Post;
 public interface PostMapper {
     Post toEntity(PostCreateDto postCreateDto);
 
-    Post toEntity(PostReadDto postReadDto);
-
     PostReadDto toReadDto(Post post);
 
 }
